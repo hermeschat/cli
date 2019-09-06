@@ -12,10 +12,11 @@ import (
 //Get is a proxy to C().Get
 var Get func(key string) string
 
-//ConfigMap represnets config
-type ConfigMap map[string]string
+//Map represnets config
+type Map map[string]string
 
-func (c ConfigMap) Get(key string) string {
+//Get gets a key from config map
+func (c Map) Get(key string) string {
 	val, exists := (c)[key]
 	if !exists {
 		return ""
@@ -23,27 +24,25 @@ func (c ConfigMap) Get(key string) string {
 	return val
 }
 
-func (c *ConfigMap) Set(key, value string) {
+//Set sets a key config
+func (c *Map) Set(key, value string) {
 	(*c)[key] = value
 }
 
-//envlist shows whats envs are available
-var envList = map[string]string{
-	"host": "", "port": "", "name": "niima",
-}
-var config *ConfigMap
+var config *Map
 
 //C gets the global config object
-func C() ConfigMap {
+func C() Map {
 	return *config
 }
 
-func init() {
+//Init initialize config
+func Init(envList map[string]string) {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Fprint(os.Stderr, errors.Wrap(err, "error in loading env").Error())
 	}
-	c := &ConfigMap{}
+	c := &Map{}
 	for k, d := range envList {
 		v := os.Getenv(strings.ToUpper(k))
 		if v == "" {

@@ -1,12 +1,16 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"hermescli/api"
+	"hermescli/config"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 )
 
 // receiveCmd represents the receive command
@@ -20,7 +24,19 @@ var receiveCmd = &cobra.Command{
 
 		sigs := make(chan os.Signal)
 		signal.Notify(sigs, syscall.SIGTERM)
+		con, err := grpc.Dial(fmt.Sprintf("%s:%s", config.Get("host"), config.Get("port")), grpc.WithInsecure())
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "error in grpc dial: %v", err)
+			os.Exit(1)
+		}
 		fmt.Println("Waiting for any message")
+		cli := api.NewHermesClient(con)
+		ctx, cancel := context.WithCancel(context.Background())
+		buff, err := cli.EventBuff(ctx)
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "error in calling event buff: %v", err)
+			os.Exit(1)
+		}
 		<-sigs
 	},
 }

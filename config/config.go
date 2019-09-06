@@ -8,6 +8,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+//Get is a proxy to C().Get
+var Get = C().Get
+
 //ConfigMap represnets config
 type ConfigMap map[string]string
 

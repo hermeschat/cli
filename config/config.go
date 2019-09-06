@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -9,7 +10,7 @@ import (
 )
 
 //Get is a proxy to C().Get
-var Get = C().Get
+var Get func(key string) string
 
 //ConfigMap represnets config
 type ConfigMap map[string]string
@@ -28,7 +29,7 @@ func (c *ConfigMap) Set(key, value string) {
 
 //envlist shows whats envs are available
 var envList = map[string]string{
-	"host": "", "port": "",
+	"host": "", "port": "", "name": "niima",
 }
 var config *ConfigMap
 
@@ -37,18 +38,13 @@ func C() ConfigMap {
 	return *config
 }
 
-/*FromEnv gets a map from env key to default value,
-tries to get key from env if not found uses default value present as value of map */
-func FromEnv(kd map[string]string) error {
+func init() {
 	err := godotenv.Load()
 	if err != nil {
-		return errors.Wrap(err, "error in loading env")
-	}
-	if kd == nil {
-		kd = envList
+		fmt.Fprint(os.Stderr, errors.Wrap(err, "error in loading env").Error())
 	}
 	c := &ConfigMap{}
-	for k, d := range kd {
+	for k, d := range envList {
 		v := os.Getenv(strings.ToUpper(k))
 		if v == "" {
 			v = d
@@ -56,5 +52,5 @@ func FromEnv(kd map[string]string) error {
 		c.Set(strings.ToLower(k), v)
 	}
 	config = c
-	return nil
+	Get = config.Get
 }

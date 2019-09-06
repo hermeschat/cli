@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"hermescli/config"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -19,6 +20,7 @@ var sendCmd = &cobra.Command{
 			fmt.Fprintf(os.Stdout, "send needs exactly two arguments")
 			os.Exit(1)
 		}
+		fmt.Println(config.Get("name"))
 	},
 }
 

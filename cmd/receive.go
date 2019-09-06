@@ -37,6 +37,8 @@ var receiveCmd = &cobra.Command{
 			fmt.Fprintf(os.Stdout, "error in calling event buff: %v", err)
 			os.Exit(1)
 		}
+		_ = buff
+		_ = cancel
 		<-sigs
 	},
 }

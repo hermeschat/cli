@@ -15,8 +15,10 @@ limitations under the License.
 */
 package main
 
-import "hermes-cli/cmd"
+import (
+	"hermescli/cmd"
+)
 
 func main() {
-  cmd.Execute()
+	cmd.Execute()
 }

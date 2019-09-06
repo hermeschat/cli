@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -24,21 +25,21 @@ import (
 // sendCmd represents the send command
 var sendCmd = &cobra.Command{
 	Use:   "send",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "hermes-cli send mode",
+	Long: `in send mode you can send messages
+	usage:
+		hermes-cli send [receiver] [body]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("send called")
+		if len(args) < 2 {
+			fmt.Fprintf(os.Stdout, "send needs exactly two arguments")
+			os.Exit(1)
+		}
+		
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(sendCmd)
-
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

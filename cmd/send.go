@@ -1,9 +1,13 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
-	"hermescli/config"
 	"os"
+
+	"github.com/amirrezaask/config"
+	"google.golang.org/grpc"
+	"hermescli/api"
 
 	"github.com/spf13/cobra"
 )
@@ -16,23 +20,44 @@ var sendCmd = &cobra.Command{
 	usage:
 		hermes-cli send [receiver] [body]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 2 {
-			fmt.Fprintf(os.Stdout, "send needs exactly two arguments")
+		err := config.Init()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "could not initialize config")
 			os.Exit(1)
 		}
-		fmt.Println(config.Get("name"))
+		if len(args) < 2 {
+			fmt.Fprintf(os.Stderr, "send needs exactly two arguments")
+			os.Exit(1)
+		}
+		receiverID := args[0]
+		msgBody := args[1]
+		con, err := grpc.Dial(fmt.Sprintf("%s:%s", config.Get("host"), config.Get("port")), grpc.WithInsecure())
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error in grpc dial: %v", err)
+			os.Exit(1)
+		}
+		cli := api.NewHermesClient(con)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		buff, err := cli.EventBuff(ctx)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error in calling event buff: %v", err)
+			os.Exit(1)
+		}
+
+		err = buff.Send(&api.Event{Event: &api.Event_NewMessage{&api.Message{
+			To:   receiverID,
+			Body: msgBody,
+		}}})
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error in sending message:%v", err)
+			os.Exit(1)
+
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(sendCmd)
-	// Here you will define your flags and configuration settings.
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// sendCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// sendCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

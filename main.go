@@ -2,14 +2,15 @@ package main
 
 import (
 	"hermescli/cmd"
-	"hermescli/config"
+
+	"github.com/amirrezaask/config"
 )
 
-var envList = map[string]string{
-	"host": "localhost", "port": "9000",
+var envList = []string{
+	"host", "port", "name",
 }
 
 func main() {
-	config.Init(envList)
+	config.Get("")
 	cmd.Execute()
 }

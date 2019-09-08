@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"hermescli/api"
-	"hermescli/config"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/amirrezaask/config"
 
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
@@ -21,7 +22,11 @@ var receiveCmd = &cobra.Command{
 	usage:
 		hermes-cli receive`,
 	Run: func(cmd *cobra.Command, args []string) {
-
+		err := config.Init()
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "could not initialize config")
+			os.Exit(1)
+		}
 		sigs := make(chan os.Signal)
 		signal.Notify(sigs, syscall.SIGTERM)
 		con, err := grpc.Dial(fmt.Sprintf("%s:%s", config.Get("host"), config.Get("port")), grpc.WithInsecure())

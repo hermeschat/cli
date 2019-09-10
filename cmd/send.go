@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/amirrezaask/config"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"hermescli/api"
 
 	"github.com/spf13/cobra"
@@ -20,11 +22,7 @@ var sendCmd = &cobra.Command{
 	usage:
 		hermes-cli send [receiver] [body]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := config.Init()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "could not initialize config")
-			os.Exit(1)
-		}
+		config.Init()
 		if len(args) < 2 {
 			fmt.Fprintf(os.Stderr, "send needs exactly two arguments")
 			os.Exit(1)
@@ -36,8 +34,11 @@ var sendCmd = &cobra.Command{
 			fmt.Fprintf(os.Stderr, "error in grpc dial: %v", err)
 			os.Exit(1)
 		}
+
 		cli := api.NewHermesClient(con)
 		ctx, cancel := context.WithCancel(context.Background())
+		md := metadata.Pairs("Authorization", config.Get("sender_token"))
+		ctx = metadata.NewOutgoingContext(ctx, md)
 		defer cancel()
 		buff, err := cli.EventBuff(ctx)
 		if err != nil {
@@ -54,6 +55,8 @@ var sendCmd = &cobra.Command{
 			os.Exit(1)
 
 		}
+		time.Sleep(time.Hour * 2)
+		fmt.Println("message sent")
 	},
 }
 

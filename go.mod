@@ -3,7 +3,7 @@ module hermescli
 go 1.13
 
 require (
-	github.com/amirrezaask/config v0.0.0-20190908181418-8cf7c4a537dd
+	github.com/amirrezaask/config v0.0.0-20190908221849-bcac0a21db62
 	github.com/golang/protobuf v1.3.2
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0

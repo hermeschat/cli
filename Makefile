@@ -7,4 +7,6 @@ sample-sender:
 sample-receiver:
 	go run main.go recv
 sample-get-channel:
-	go run main.go ch 7fa90faf-1871-1eb0-acca-e1111f35321b
+	go run main.go ch 77f35ec8-6614-65a9-69e9-68fccb46dd7f
+sample-list-channel:
+	go run main.go listchannels

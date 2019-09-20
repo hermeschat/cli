@@ -51,7 +51,6 @@ var receiveCmd = &cobra.Command{
 				continue
 			}
 			fmt.Println("event is")
-			fmt.Printf("%+v\n", e)
 			switch e.GetEvent().(type) {
 			case *api.Event_NewMessage:
 				fmt.Println("New Message recieved")

@@ -55,7 +55,7 @@ var getchannelCmd = &cobra.Command{
 		defer cancel()
 		ch, err := cli.GetChannel(ctx, &api.GetChannelRequest{
 			Id:        channelID,
-			Timestamp: fmt.Sprint(now.Unix()),
+			Timestamp: "1568557910",
 		})
 		if err != nil {
 			fmt.Fprint(os.Stderr, err)
